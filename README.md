@@ -1,4 +1,9 @@
 
+# Kubernetes-cluster
+This repository is the documentation for clustering multiple machines together as a cluster for containerizing workloads. we will also be installing rancher for a proper interactive interface.
+# 
+
+
 ## Documentation
 
 ## Pre-requisites:
@@ -10,7 +15,7 @@
 - All computers must be on same network
 
 ## Initial setup:
-
+## Enabling SSH
 - after installing  OS on all the computers. you have to enable ssh access on all computers. by following the processs below >
  -open the terminal and run:
 
@@ -208,7 +213,9 @@ By default the rancher dashboard is locked the default password is somewhere in 
 -Go back to terminal of virtual box vm
 we will need the container id on which rancher is spinning up. to get that, run: 
 ```bashrc
-docker ps```
+docker ps
+
+```
 
 - Now we got the container id run this command:
 ```bashrc
@@ -224,4 +231,17 @@ the next step is to import our main cluster into it.
 
 ## importing main cluster to Rancher
 
+As you are now on the homepage of rancher dashboard you will see a icon on top right that says `import existing` click on that and name your cluster and proceed. no need to mess with any other setting.
+
+Now it wwill show you some configuration command that starts with `curl -sfl` we will need the command with `-insecure` tag because wwe dont have ssl certificate don't worry we really dont need that the command i am talking about maybe it is last among those three commands. 
+- copy that command and open terminal of your master node and don't forget enabling root accesspaste and run. wait for its completion.
+
+- Go back to browser , you will see that your cluster is succesfully added showing all the resources and ready for containerizing pods. 
+## Happy Clustering :)
+
+
+
+## Author
+
+- [CHOUDHRY](https://www.github.com/choudhryfrompak22)
 
