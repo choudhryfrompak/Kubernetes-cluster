@@ -1,9 +1,4 @@
 
-# Kubernetes-cluster
-This repository is the documentation for clustering multiple machines together as a cluster for containerizing workloads. we will also be installing rancher for a proper interactive interface.
-# 
-
-
 ## Documentation
 
 ## Pre-requisites:
@@ -142,4 +137,91 @@ Run:
 THis will show you Master and all the worker nodes that are registered.
 
 Congratulation the Kubernetes cluster has now been successfully configured by this Guided processs.
+
+## Setting Up Rancher
+- No doubt that our cluster is now properly usable and ready for deployment of Pods. But
+
+- For a proper Graphical Dashboard monitoring and management system we are installing rancher.
+
+- The whole proccess of installiing rancher will be carried on the master node on which we have installed Graphical version of ubuntu 20.04. 
+
+- We need to create a dedicated virtual machine to run rancher on cluster. we will import our cluster to that server.
+
+- connect a monitor to the machine on which you set up masteer node and open firefox.
+
+## Download virtualbox
+
+- you need to download virtualbox to create a virtual machine inside master node computer.
+- Also download ubuntu server iso file to install in virtual machine
+- you may encounter network ip related problems later so to expose it to local network configure the network setting of the virtualbox vm to ```NAT```.
+- Virtual machine configuration should be at least 
+```bashrc
+    4 cores 
+    4gb ram
+    40gb disk space
+```
+Once you have initiated the VM configure its `SSH ACCES` like we did on other machines in start and get its `IP ADDRESS`
+
+Access this VM fromany other computer lke your laptop powershell to check whetherit is publically available or not by using `ssh username@ip_address`
+
+After accessing it we can now start setting up rancher.
+
+## installing docker-engine
+- we need  to install docker image to containerize rancher image
+
+- we can INSTALL the compaitable version suggested by rancher by running this command 
+
+```bashrc
+    curl https://releases.rancher.com/install-docker/20.10.sh | sh
+```
+
+- Note that the following sysctl setting must be applied:
+
+```net.bridge.bridge-nf-call-iptables=1```
+
+to confirm whether docker is properly installed run ```docker``` 
+
+## containerizing rancher image:
+we need to make rancher data presit accross reboots.
+- Rancher by default stores its data in ```/var/lib/rancher```
+Lets create a space to save data into our specified directory.
+we will make one by Running:
+```mkdir /kubeernetes/rancher/volume```
+
+Now as the docker is properly installed and our volume folder is ready we can proceed by running a command that i have set up to make the installation easy.
+
+```cd /kubeernetes/rancher``` 
+
+Run:
+```bashrc
+docker run -d --name rancher-server -v ${PWD}/volume:/var/lib/rancher --restart=unless-stopped -p 80:80 -p 443:443 --privileged rancher/rancher:latest
+```
+- After running this wait for few minutes to let the rancher serveer start
+
+Then go to a browser and type the ip address of your virtual machine that is spinning up on virtualbox with the port 443 like this:
+```bashrc
+https://<ip_address>:443
+```
+## Unlocking Rancher Dashboard
+
+By default the rancher dashboard is locked the default password is somewhere in the logs of docker container and we need to pull it out for that we will go through some commands
+-Go back to terminal of virtual box vm
+we will need the container id on which rancher is spinning up. to get that, run: 
+```bashrc
+docker ps```
+
+- Now we got the container id run this command:
+```bashrc
+docker logs <container-id> 2>&1 |grep "Bootstrap Password:"
+```
+- Replace the ```<container-id>``` with the id of your container. when you run this command this will grab the bootstrap password.
+
+- Now again open the browser and enter that password 
+- Now it will ask you to change the password. set your desired password & proceed
+Rancher is now properly installed on your virtulbox.
+
+the next step is to import our main cluster into it.
+
+## importing main cluster to Rancher
+
 
