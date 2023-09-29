@@ -85,3 +85,61 @@ entering your password and you will get root access.
     sudo apt install curl
 ```
 after installing curl pull the K3s cluster image from internet by running:
+
+## This process is for master node:
+
+Run this command on master node.
+```bashrc
+    curl -sfL https://get.k3s.io |  K3S_KUBECONFIG_MODE="644" sh -s
+```
+
+- this will pull image and run it on master node. and i am also adding a configuration in it to make it able to run on rancher.
+
+after doing that we have ```kubectl``` available as a command that will help us do everything.
+- to confirm that the masterr node is properly configured
+
+run:
+```bashrc
+kubectl get nodes
+```
+
+That is it the master node is now configured. Now to setup the worker node we need a token from our master node.
+to get that token. Run:
+
+```bashrc
+    cat var/lib/rancher/k3s/server/node-token
+```
+Running this command will show the token, copy and save that token.
+Now we are gonna create a configuration command for our worker node that will be like:
+
+```bashrc
+    curl -sfL https://get.k3s.io | K3S_TOKEN="YOUR_TOKEN" K3S_URL="https://[ip of master]:6443" K3S_NODE_NAME="workernodename" sh -s
+```
+
+- here replace ```[ip of master]``` with the master node ip address.
+- Replace ```YOUR_TOKEN``` wwith the token we cat & saved from master node recently.
+- Replace ``workernodename``` with your desire name for your worker node to be registered inside master.
+
+Once your command is ready. you need to ssh into your worker node. by using ```ssh username@ip_address``` inside a new powershell terminal. Login into the worker node and enabke the root access by running 
+
+```
+   sudo su -
+
+```
+
+After getting the root access paste the command you make from this template ```curl -sfL https://get.k3s.io | K3S_TOKEN="YOUR_TOKEN" K3S_URL="https://[ip of master]:6443" K3S_NODE_NAME="workernodename" sh -s```
+
+Run this command.
+
+# REPEAT THIS PROCESS FOR ALL WORKER NODES.
+
+Now go back to your MASTER NODE and run this command to check whether the worker nodes are registered or not.
+
+Run:
+```bashrc
+    kubectl get nodes
+```
+THis will show you Master and all the worker nodes that are registered.
+
+Congratulation the Kubernetes cluster has now been successfully configured by this Guided processs.
+
